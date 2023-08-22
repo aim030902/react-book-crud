@@ -1,0 +1,16 @@
+.book-item {
+    border-bottom: 1px solid white;
+    user-select: none;
+}
+
+.book-item p {
+    cursor: pointer;
+}
+
+.book-item:last-child {
+    border-bottom: none;
+}
+
+.icons i {
+    cursor: pointer;
+}

@@ -1,0 +1,6 @@
+.btn-white {
+    background: white;
+    color: black;
+    transition: all .45s ease;
+}
+
