@@ -1,12 +1,15 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import './BookFilter.css'
+import { Context } from '../../context';
 
-const BookFilter = ({ setFilterHandler }) => {
+const BookFilter = () => {
+
+  const { _, dispatch } = useContext(Context);
 
   const [ filter, setFilter ] = useState('all');
 
   const filterHandler = (title) => {
-    setFilterHandler(title);
+    dispatch({ type: 'SET_FILTER', payload: title })
     setFilter(title)
   }
 

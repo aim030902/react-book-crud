@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import './BookAdd.css'
+import { Context } from '../../context';
 
-const BookAdd = ({ onAddHandler }) => {
+const BookAdd = () => {
+
+  const { state, dispatch } = useContext(Context);
 
   const [ name, setName] = useState('');
   const [ readCount, setReadCount] = useState('');
@@ -9,10 +12,7 @@ const BookAdd = ({ onAddHandler }) => {
   const addHandler = (e) => {
     e.preventDefault();
     if(name == '' || readCount == '') return;
-    onAddHandler({
-      name,
-      readCount
-    })
+    dispatch({ type: 'ON_ADD', payload: { name, readCount }})
 
     setName('')
     setReadCount('')

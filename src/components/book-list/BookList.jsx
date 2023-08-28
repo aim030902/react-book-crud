@@ -1,14 +1,22 @@
+import { useContext } from 'react'
 import BookItem from '../book-item/BookItem'
-import Pagination from '../pagination/Pagination'
 import './BookList.css'
+import { Context } from '../../context'
+import { onFilterHandler, onTermHandler } from '../../utils'
 
-const BookList = ({ books, onLikeHandler, onSavedHandler, onDeleteHandler }) => {
+const BookList = () => {
+  const { state, dispatch } = useContext(Context);
+  // const books = onTermHandler(onFilterHandler(state.books)).slice((state.currentPage - 1) * 10, (state.currentPage - 1) * 10 + 10)
+  
+  const books = onTermHandler(onFilterHandler(state.books, state.filter), state.term).slice((state.currentPage - 1) * 10, (state.currentPage - 1) * 10 + 10);
+
   return (
+
     <div className='book-list'>
       { books.length == 0 
         ? <p className='text-danger text-center fs-3 mb-0'>Kitoblar mavjud emas !</p>
         : books.map(book => (
-          <BookItem key={book.id} book={book} onLikeHandler={onLikeHandler} onSavedHandler={onSavedHandler} onDeleteHandler={onDeleteHandler} />
+          <BookItem key={book.id} book={book} />
         ))
       }
     </div>

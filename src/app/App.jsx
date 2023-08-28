@@ -1,19 +1,16 @@
 import './App.css'
 import { BookInfo, BookFilter, BookSearch, BookList, BookAdd, Loader, Pagination } from '../components'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect } from 'react'
+import { Context } from '../context'
+import { onFilterHandler, onTermHandler } from '../utils'
 
 const App = () => {
 
-  const [books, setBooks] = useState([]);
-
-  const [ term, setTerm ] = useState('');
-  const [ filter, setFilter ] = useState('');
-  const [ isLoading, setIsLoading ] = useState(false);
-  const [ currentPage, setCurrentPage ] = useState(1);
+  const { state, dispatch } = useContext(Context);
 
   useEffect(() => {
     let id = 4;
-    setIsLoading(true);
+    dispatch({ type: 'SET_ISLOADING', payload: true })
 
     fetch(`https://jsonplaceholder.typicode.com/todos`)
         .then(response => response.json())
@@ -27,79 +24,27 @@ const App = () => {
               isLike: false
             }
           })
-          setBooks([...loadData])
+          dispatch({ type: 'SET_BOOKS', payload:  [...loadData]})
         })
         .finally(setTimeout(() => {
-          setIsLoading(false)
+          dispatch({ type: 'SET_ISLOADING', payload: false })
         }, 500));
   }, []);
   
-  const onLikeHandler = (id) => {
-    setBooks(books.map(book => {
-      if(book.id === id) {
-        return {...book, isLike: !book.isLike}
-      }
-      return book;
-    }))
-  }
-
-  const onSavedHandler = (id) => {
-    setBooks(books.map(book => {
-      if(book.id === id) {
-        return {...book, isSaved: !book.isSaved}
-      }
-      return book;
-    }))
-  }
-
-  const onDeleteHandler = (id) => {
-    setBooks(books.filter(book => book.id !== id))
-  }
-
-  const onAddHandler = (book) => {
-    setBooks([...books, {...book, id: books.length + 1, isLike: false, isSaved: false}])
-  }
-
-  const setTermHandler = (term) => setTerm(term);
-  const setFilterHandler = (filter) => setFilter(filter);
-
-  const onTermHandler = (books) => {
-    if(term == '') return books;
-    return books.filter(book => book.name.toLowerCase().indexOf(term.toLowerCase()) > -1);
-  }
-
-  const onFilterHandler = (books) => {
-    switch(filter) {
-      case 'popular': return books.filter(book => book.readCount > 800).sort((a, b) => b.readCount - a.readCount);
-      case 'saved': return books.filter(book => book.isSaved);
-      default: return books;
-    }
-  }
-
-  const setCurrentPageHandler = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  }
-
-
-
-
-
-  
-
   return (
     <div className='container'>
       <div className="app font-monospace">
-        <BookInfo books={books} />
+        <BookInfo />
         <div className="sf">
-          <BookFilter setFilterHandler={setFilterHandler} />
-          <BookSearch setTermHandler={setTermHandler} />
+          <BookFilter />
+          <BookSearch />
         </div>
-        { isLoading
+        { state.isLoading
           ? <Loader />
-          : <BookList books={onTermHandler(onFilterHandler(books)).slice((currentPage - 1) * 10, (currentPage - 1) * 10 + 10)} onLikeHandler={onLikeHandler} onSavedHandler={onSavedHandler} onDeleteHandler={onDeleteHandler} />
+          : <BookList />
         }
-        { !isLoading && <Pagination pageCount={Math.ceil(books.length / 10)} setCurrentPageHandler={setCurrentPageHandler} />}
-        <BookAdd onAddHandler={onAddHandler} />
+        { (!state.isLoading && onTermHandler(onFilterHandler(state.books, state.filter), state.term).length > 10) && <Pagination />}
+        <BookAdd />
       </div>
     </div>
   )

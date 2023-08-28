@@ -1,13 +1,20 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import './Pagination.css'
+import { Context } from '../../context';
+import { onFilterHandler, onTermHandler } from '../../utils';
 
-const Pagination = ({pageCount, setCurrentPageHandler}) => {
+const Pagination = () => {
+
+    const { state, dispatch } = useContext(Context);
 
     const [ activePage, setActivePage ] = useState(1);
 
+
+    const pageCount = Math.ceil(onTermHandler(onFilterHandler(state.books, state.filter), state.term).length / 10);
+
     const changePage = (pageNumber) => {
         setActivePage(pageNumber);
-        setCurrentPageHandler(pageNumber)
+        dispatch({type: 'SET_CURRENT_PAGE', payload: pageNumber })
     }
 
   return (
